@@ -1,0 +1,35 @@
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: #f4f4f4;
+  }
+  
+  input[type='number'], button {
+    padding: 10px;
+    margin-top: 5px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  button {
+    background-color: #5c67f2;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #4a54e1;
+  }
+  
+  .status {
+    font-weight: bold;
+    color: green;
+  }
+  
