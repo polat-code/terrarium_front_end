@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./SensorDashboard.css";
 import {
   fetchData,
-  updateTemperatureThreshold,
-  updateHumidityThreshold,
+  updateTemperatureThresholdChange,
+  updateHumidityThresholdChange,
 } from "../helper/api.js";
 
 const SensorDashboard = () => {
@@ -14,44 +14,29 @@ const SensorDashboard = () => {
   const [heaterStatus, setHeaterStatus] = useState("OFF");
   const [humidifierStatus, setHumidifierStatus] = useState("OFF");
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      handleFetchData();
-    }, 2000);
-    return () => clearInterval(intervalId);
-  }, []);
+  useEffect(() => {}, []);
 
-  const handleFetchData = async () => {
+  // Threshold changing
+  ////////////////////////////////////////////////////////////////////////
+  const handleSetTemperatureThresholdChange = async () => {
     try {
-      const data = await fetchData();
-      setHumidity(data.humidity);
-      setTemperature(data.temperature);
-      setHeaterStatus(data.heater ? "ON" : "OFF");
-      setHumidifierStatus(data.humidifier ? "ON" : "OFF");
-    } catch (error) {
-      console.error("Error:", error);
+      const response = await updateTemperatureThresholdChange(
+        temperatureThreshold
+      );
+      console.log(response);
+    } catch (e) {
+      console.log(e);
     }
   };
 
-  const handleTemperatureThresholdChange = async (e) => {
-    const newThreshold = e.target.value;
-    setTemperatureThreshold(newThreshold);
+  const handleSetHumidityThresholdChange = async () => {
     try {
-      await updateTemperatureThreshold(newThreshold);
-    } catch (error) {
-      console.error("Error:", error);
+      const response = await updateHumidityThresholdChange(humidityThreshold);
+    } catch (e) {
+      console.log(e);
     }
   };
-
-  const handleHumidityThresholdChange = async (e) => {
-    const newThreshold = e.target.value;
-    setHumidityThreshold(newThreshold);
-    try {
-      await updateHumidityThreshold(newThreshold);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+  ////////////////////////////////////////////////////////////////////////////////////////
 
   return (
     <div className="container">
@@ -61,9 +46,9 @@ const SensorDashboard = () => {
         <input
           type="number"
           value={temperatureThreshold}
-          onChange={handleTemperatureThresholdChange}
+          onChange={(e) => setTemperatureThreshold(e.target.value)}
         />
-        <button onClick={handleTemperatureThresholdChange}>
+        <button onClick={handleSetTemperatureThresholdChange}>
           Set Temperature
         </button>
       </div>
@@ -72,9 +57,9 @@ const SensorDashboard = () => {
         <input
           type="number"
           value={humidityThreshold}
-          onChange={handleHumidityThresholdChange}
+          onChange={(e) => setHumidityThreshold(e.target.value)}
         />
-        <button onClick={handleHumidityThresholdChange}>Set Humidity</button>
+        <button onClick={handleSetHumidityThresholdChange}>Set Humidity</button>
       </div>
       <p>
         Humidity: <span>{humidity}%</span>
