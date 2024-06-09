@@ -6,6 +6,7 @@ import {
   updateHumidityThresholdChange,
   fetchTemperature,
   fetchHumidity,
+  getThresholdSettings,
 } from "../../helper/api.js";
 
 const SensorDashboard = () => {
@@ -71,7 +72,15 @@ const SensorDashboard = () => {
     const intervalId = setInterval(() => {
       fetchAndLogTemperature(); // Asenkron işlevi çağır
       fetchAndLogHumidity();
-    }, 2000); // Her 2 saniyede bir çağır
+    }, 5000); // Her 5 saniyede bir çağır
+
+    const getSettingsFromDatabase = async () => {
+      const settingsFromDatabase = await getThresholdSettings();
+      setTemperatureThreshold(settingsFromDatabase.data.temperatureThreshold);
+      setHumidityThreshold(settingsFromDatabase.data.humidityThreshold);
+    };
+
+    getSettingsFromDatabase();
 
     return () => clearInterval(intervalId); // Cleanup fonksiyonu
   }, []);

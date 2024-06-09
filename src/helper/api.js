@@ -68,3 +68,14 @@ export const fetchHumidity = async () => {
     throw error;
   }
 };
+
+// Gets the humidity value
+export const getThresholdSettings = async () => {
+  try {
+    const response = await apiClient.get("/settings/threshold-settings");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
