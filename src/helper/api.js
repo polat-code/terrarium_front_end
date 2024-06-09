@@ -79,3 +79,25 @@ export const getThresholdSettings = async () => {
     throw error;
   }
 };
+
+// Gets the humidity value
+export const fetchHeaterStatusFromDB = async () => {
+  try {
+    const response = await apiClient.get("/temperature/temperature-status");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// Gets the humidity value
+export const fetchHumidifierStatusFromDB = async () => {
+  try {
+    const response = await apiClient.get("/humidity/humidity-status");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};

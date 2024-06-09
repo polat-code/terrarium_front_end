@@ -7,6 +7,8 @@ import {
   fetchTemperature,
   fetchHumidity,
   getThresholdSettings,
+  fetchHeaterStatusFromDB,
+  fetchHumidifierStatusFromDB,
 } from "../../helper/api.js";
 
 const SensorDashboard = () => {
@@ -14,8 +16,8 @@ const SensorDashboard = () => {
   const [humidityThreshold, setHumidityThreshold] = useState(50.0);
   const [humidity, setHumidity] = useState("0.0");
   const [temperature, setTemperature] = useState("0.0");
-  const [heaterStatus, setHeaterStatus] = useState("OFF");
-  const [humidifierStatus, setHumidifierStatus] = useState("OFF");
+  const [heaterStatus, setHeaterStatus] = useState(false);
+  const [humidifierStatus, setHumidifierStatus] = useState(false);
   const [temperatureResponse, setTemperatureResponse] = useState({
     id: "",
     temperatureLevel: 0.0,
@@ -69,10 +71,28 @@ const SensorDashboard = () => {
       }
     };
 
+    /// Status
+    const fetchHeaterStatus = async () => {
+      const heaterStatusResponse = await fetchHeaterStatusFromDB();
+      console.log(heaterStatusResponse);
+      setHeaterStatus(heaterStatusResponse.data);
+    };
+
+    const fetchHumidifierStatus = async () => {
+      const humidifierStatusResponse = await fetchHumidifierStatusFromDB();
+      console.log(humidifierStatusResponse);
+      setHumidifierStatus(humidifierStatusResponse.data);
+    };
+
     const intervalId = setInterval(() => {
       fetchAndLogTemperature(); // Asenkron işlevi çağır
       fetchAndLogHumidity();
+      fetchHeaterStatus();
+      fetchHumidifierStatus();
     }, 5000); // Her 5 saniyede bir çağır
+
+    /// Status
+    const getHumidityStatus = async () => {};
 
     const getSettingsFromDatabase = async () => {
       const settingsFromDatabase = await getThresholdSettings();
@@ -144,10 +164,24 @@ const SensorDashboard = () => {
         </span>
       </p>
       <p>
-        Heater Status: <span className="status">{heaterStatus}</span>
+        Heater Status:{" "}
+        <span className="status">
+          {heaterStatus ? (
+            <span className="yellow-color">ON</span>
+          ) : (
+            <span className="red-color">OFF</span>
+          )}
+        </span>
       </p>
       <p>
-        Humidifier Status: <span className="status">{humidifierStatus}</span>
+        Humidifier Status:{" "}
+        <span className="status">
+          {humidifierStatus ? (
+            <span className="yellow-color">ON</span>
+          ) : (
+            <span className="red-color">OFF</span>
+          )}
+        </span>
       </p>
     </div>
   );
