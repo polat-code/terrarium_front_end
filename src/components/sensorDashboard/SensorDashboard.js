@@ -5,6 +5,7 @@ import {
   updateTemperatureThresholdChange,
   updateHumidityThresholdChange,
   fetchTemperature,
+  fetchHumidity,
 } from "../../helper/api.js";
 
 const SensorDashboard = () => {
@@ -20,7 +21,12 @@ const SensorDashboard = () => {
     date: "",
   });
   const [temperatureDate, setTemperatureDate] = useState("");
-  const [humidityResponse, setHumidityResponse] = useState({});
+  const [humidityResponse, setHumidityResponse] = useState({
+    id: "",
+    humidityLevel: 0.0,
+    date: "",
+  });
+  const [humidityDate, setHumidityDate] = useState("");
 
   const extractTime = (date) => {
     return date.split("T")[1].split(".")[0];
@@ -44,8 +50,27 @@ const SensorDashboard = () => {
       }
     };
 
+    const fetchAndLogHumidity = async () => {
+      try {
+        const response = await fetchHumidity(); // API'dan sıcaklık verisini al
+        //console.log(response);
+        if (
+          (humidityResponse.id != "" &&
+            response.data.id != humidityResponse.id) ||
+          humidityResponse.id == ""
+        ) {
+          setHumidityResponse(response.data);
+          setHumidity(response.data.humidityLevel);
+          setHumidityDate(extractTime(response.data.date));
+        }
+      } catch (error) {
+        console.error("Sıcaklık alınırken hata oluştu:", error);
+      }
+    };
+
     const intervalId = setInterval(() => {
       fetchAndLogTemperature(); // Asenkron işlevi çağır
+      fetchAndLogHumidity();
     }, 2000); // Her 2 saniyede bir çağır
 
     return () => clearInterval(intervalId); // Cleanup fonksiyonu
@@ -97,11 +122,17 @@ const SensorDashboard = () => {
         <button onClick={handleSetHumidityThresholdChange}>Set Humidity</button>
       </div>
       <p>
-        Humidity: <span>{humidity}%</span>
+        <span className="red-color">Humidity:</span> <span>{humidity}%</span>{" "}
+        <span>
+          <span className="red-color">Date :</span> {humidityDate}
+        </span>
       </p>
       <p>
-        Temperature: <span>{temperature}°C</span>{" "}
-        <span>Date : {temperatureDate}</span>
+        <span className="red-color">Temperature:</span>{" "}
+        <span>{temperature}°C</span>{" "}
+        <span>
+          <span className="red-color">Date :</span> {temperatureDate}
+        </span>
       </p>
       <p>
         Heater Status: <span className="status">{heaterStatus}</span>
