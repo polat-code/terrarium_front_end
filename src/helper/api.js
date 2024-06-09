@@ -42,3 +42,16 @@ export const updateHumidityThresholdChange = async (humidity) => {
     throw error;
   }
 };
+
+// Updates the humidity threshold
+export const fetchTemperature = async () => {
+  try {
+    const response = await apiClient.get(
+      "/temperature/fetching-single-temperature-value"
+    );
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};

@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
-import SensorDashboard from "./components/SensorDashboard";
+import SensorDashboard from "./components/sensorDashboard/SensorDashboard";
 
 function App() {
   return (

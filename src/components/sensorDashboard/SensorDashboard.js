@@ -4,22 +4,52 @@ import {
   fetchData,
   updateTemperatureThresholdChange,
   updateHumidityThresholdChange,
+  fetchTemperature,
 } from "../../helper/api.js";
-import { Chart } from "chart.js";
 
 const SensorDashboard = () => {
   const [temperatureThreshold, setTemperatureThreshold] = useState(24.0);
   const [humidityThreshold, setHumidityThreshold] = useState(50.0);
-  const [humidity, setHumidity] = useState("--");
-  const [temperature, setTemperature] = useState("--");
+  const [humidity, setHumidity] = useState("0.0");
+  const [temperature, setTemperature] = useState("0.0");
   const [heaterStatus, setHeaterStatus] = useState("OFF");
   const [humidifierStatus, setHumidifierStatus] = useState("OFF");
+  const [temperatureResponse, setTemperatureResponse] = useState({
+    id: "",
+    temperatureLevel: 0.0,
+    date: "",
+  });
+  const [temperatureDate, setTemperatureDate] = useState("");
+  const [humidityResponse, setHumidityResponse] = useState({});
 
-  useEffect(() => {}, []);
+  const extractTime = (date) => {
+    return date.split("T")[1].split(".")[0];
+  };
 
-  const dataArray = Array.from({ length: 1000 }, () =>
-    Math.floor(Math.random() * 100)
-  );
+  useEffect(() => {
+    const fetchAndLogTemperature = async () => {
+      try {
+        const response = await fetchTemperature(); // API'dan sıcaklık verisini al
+        if (
+          (temperatureResponse.id != "" &&
+            response.data.id != temperatureResponse.id) ||
+          temperatureResponse.id == ""
+        ) {
+          setTemperatureResponse(response.data);
+          setTemperature(response.data.temperatureLevel);
+          setTemperatureDate(extractTime(response.data.date));
+        }
+      } catch (error) {
+        console.error("Sıcaklık alınırken hata oluştu:", error);
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      fetchAndLogTemperature(); // Asenkron işlevi çağır
+    }, 2000); // Her 2 saniyede bir çağır
+
+    return () => clearInterval(intervalId); // Cleanup fonksiyonu
+  }, []);
 
   // Threshold changing
   ////////////////////////////////////////////////////////////////////////
@@ -67,20 +97,11 @@ const SensorDashboard = () => {
         <button onClick={handleSetHumidityThresholdChange}>Set Humidity</button>
       </div>
       <p>
-        Humidity:{" "}
-        <span>
-          {humidity}
-          <Chart
-            label={"Humidity"}
-            data={dataArray}
-            x_index_label={"X index"}
-            y_index_label={"y index"}
-          />{" "}
-          %
-        </span>
+        Humidity: <span>{humidity}%</span>
       </p>
       <p>
-        Temperature: <span>{temperature}°C</span>
+        Temperature: <span>{temperature}°C</span>{" "}
+        <span>Date : {temperatureDate}</span>
       </p>
       <p>
         Heater Status: <span className="status">{heaterStatus}</span>
